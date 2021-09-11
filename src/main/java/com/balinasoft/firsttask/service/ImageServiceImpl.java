@@ -2,6 +2,7 @@ package com.balinasoft.firsttask.service;
 
 import com.balinasoft.firsttask.domain.Image;
 import com.balinasoft.firsttask.domain.User;
+import com.balinasoft.firsttask.domain.api2.Category;
 import com.balinasoft.firsttask.dto.ImageDtoIn;
 import com.balinasoft.firsttask.dto.ImageDtoOut;
 import com.balinasoft.firsttask.repository.ImageRepository;
@@ -176,4 +177,5 @@ public class ImageServiceImpl implements ImageService {
         String onlyFolder = fileName.substring(0, fileName.lastIndexOf('/'));
         Files.createDirectories(Paths.get(getFullPath(onlyFolder)));
     }
+
 }

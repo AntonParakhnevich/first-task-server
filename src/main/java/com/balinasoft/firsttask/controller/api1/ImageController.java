@@ -56,4 +56,6 @@ public class ImageController {
     public ResponseDto getImages(@RequestParam int page) {
         return wrap(imageService.getImages(page));
     }
+
+
 }
