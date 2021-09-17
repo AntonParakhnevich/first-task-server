@@ -1,5 +1,6 @@
 package com.balinasoft.firsttask.controller.api1;
 
+import com.balinasoft.firsttask.dto.CategoryDtoIn;
 import com.balinasoft.firsttask.dto.ResponseDto;
 import com.balinasoft.firsttask.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 import static com.balinasoft.firsttask.system.StaticWrapper.wrap;
 

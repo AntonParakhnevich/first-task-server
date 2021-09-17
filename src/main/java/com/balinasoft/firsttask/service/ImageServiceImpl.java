@@ -8,6 +8,7 @@ import com.balinasoft.firsttask.dto.ImageDtoOut;
 import com.balinasoft.firsttask.repository.ImageRepository;
 import com.balinasoft.firsttask.repository.UserRepository;
 import com.balinasoft.firsttask.system.error.ApiAssert;
+import com.balinasoft.firsttask.util.SecurityContextHolderWrapper;
 import com.balinasoft.firsttask.util.StringGenerator;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +29,9 @@ import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.balinasoft.firsttask.util.SecurityContextHolderWrapper.currentUserId;
 
 @Service
 @Transactional(rollbackFor = Throwable.class)
@@ -62,13 +63,14 @@ public class ImageServiceImpl implements ImageService {
             throw new RuntimeException(e);
         }
 
-        User user = userRepository.findOne(currentUserId());
+        User user = userRepository.findOne(securityContextHolderWrapper.currentUserId());
         Image image = new Image();
         image.setUrl(fileName);
         image.setUser(user);
         image.setLat(imageDtoIn.getLat());
         image.setLng(imageDtoIn.getLng());
         image.setDate(imageDtoIn.getDate());
+        image.addCategory(category);
         image = imageRepository.save(image);
         return toDto(image);
     }
@@ -77,7 +79,7 @@ public class ImageServiceImpl implements ImageService {
     public void deleteImage(int id) {
         Image image = imageRepository.findOne(id);
         ApiAssert.notFound(image == null);
-        ApiAssert.forbidden(image.getUser().getId() != currentUserId());
+        ApiAssert.forbidden(image.getUser().getId() != securityContextHolderWrapper.currentUserId());
         try {
             Files.delete(Paths.get(getFullPath(image.getUrl())));
         } catch (IOException e) {
@@ -88,8 +90,19 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public List<ImageDtoOut> getImages(int page) {
-        List<Image> images = imageRepository.findByUser(currentUserId(), new PageRequest(page, 20));
-        return images.stream().map(this::toDto).collect(Collectors.toList());
+        List<Image> images = imageRepository.findByUser(securityContextHolderWrapper.currentUserId(), new PageRequest(page, 20));
+        return images.stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ImageDtoOut> getImagesByCategories(Set<Category> categories, int page) {
+        List<Image> images = imageRepository.getImagesByCategoriesIn(categories);
+//        List<Image> images = imageRepository.getImagesByCategoriesIn(categories,new PageRequest(page,20));
+        return images.stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     private ImageDtoOut toDto(Image image) {
@@ -177,5 +190,4 @@ public class ImageServiceImpl implements ImageService {
         String onlyFolder = fileName.substring(0, fileName.lastIndexOf('/'));
         Files.createDirectories(Paths.get(getFullPath(onlyFolder)));
     }
-
 }

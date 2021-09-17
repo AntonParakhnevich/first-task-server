@@ -11,11 +11,7 @@ import java.util.stream.Collectors;
  * Created by .
  */
 public interface CategoryService {
-     CategoryDTO save(String name);
-
-
-//     void addImageInCategory(Long categoryId, int imageId);
-
+    CategoryDtoOut addCategory(CategoryDtoIn categoryDtoIn);
 
      void deleteCategory(Long categoryId);
 

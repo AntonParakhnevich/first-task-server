@@ -38,4 +38,9 @@ public class Image {
     @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "image_category", joinColumns = @JoinColumn(name = "U_ID"), inverseJoinColumns = @JoinColumn(name = "C_ID"))
     private Set<Category> categories = new HashSet<>();
+
+    public void addCategory(Category category){
+        categories.add(category);
+        category.getImages().add(this);
+    }
 }

@@ -20,8 +20,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
 
-    private final ImageRepository imageRepository;
-
     @Override
     public CategoryDTO save(String name){
         Category category = Category.builder().name(name).build();
@@ -29,23 +27,17 @@ public class CategoryServiceImpl implements CategoryService {
         return toDto(category);
     }
 
-//    @Override
-//    public void addImageInCategory(Long categoryId, int imageId){
-//        Image image = imageRepository.findOne(imageId);
-//        Category category = categoryRepository.findOne(categoryId);
-//        category.addImage(image);
-//    }
-
     @Override
-    public void deleteCategory(Long categoryId){
-        categoryRepository.delete(categoryId);
+    public void deleteCategory(int categoryId) {
+        Category category = categoryRepository.findOne(categoryId);
+        ApiAssert.notFound(category == null);
+        ApiAssert.forbidden(category.getUser().getId() != securityContextHolderWrapper.currentUserId());
+        categoryRepository.delete(category);
     }
 
     @Override
-    public List<CategoryDTO> getAllCategories(){
-        List<Category> categories = categoryRepository.findAll();
-        return categories
-                .stream()
+    public List<CategoryDtoOut> getCategories(int page) {
+        return categoryRepository.findByUser(securityContextHolderWrapper.currentUserId(), new PageRequest(page, 20)).stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
