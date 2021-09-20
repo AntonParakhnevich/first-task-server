@@ -1,6 +1,5 @@
 package com.balinasoft.firsttask.controller.api1;
 
-import com.balinasoft.firsttask.domain.Category;
 import com.balinasoft.firsttask.dto.ImageDtoIn;
 import com.balinasoft.firsttask.dto.ImageDtoOut;
 import com.balinasoft.firsttask.dto.ResponseDto;
@@ -15,9 +14,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-
 import java.util.List;
-import java.util.Set;
 
 import static com.balinasoft.firsttask.system.StaticWrapper.wrap;
 
@@ -64,7 +61,7 @@ public class ImageController {
     @Secured("ROLE_USER")
     @RequestMapping(value = "/images", method = RequestMethod.GET)
     @ApiOperation(value = "Upload image", response = ImageDtoOut.class, responseContainer = "List")
-    public ResponseDto getImagesByCategories(@RequestParam int page, @RequestBody Set<Category> categories) {
+    public ResponseDto getImagesByCategories(@RequestParam List<Integer> categories, @RequestParam int page) {
         return wrap(imageService.getImagesByCategories(categories, page));
     }
 

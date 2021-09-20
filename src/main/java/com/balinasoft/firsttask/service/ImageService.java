@@ -1,10 +1,7 @@
 package com.balinasoft.firsttask.service;
 
-import com.balinasoft.firsttask.domain.Category;
-import com.balinasoft.firsttask.domain.Image;
 import com.balinasoft.firsttask.dto.ImageDtoIn;
 import com.balinasoft.firsttask.dto.ImageDtoOut;
-import com.balinasoft.firsttask.dto.ResponseDto;
 
 import java.util.List;
 import java.util.Set;
@@ -16,6 +13,6 @@ public interface ImageService {
 
     List<ImageDtoOut> getImages(int page);
 
-    List<ImageDtoOut> getImagesByCategories(Set<Category> categories, int page);
+    List<ImageDtoOut> getImagesByCategories(List<Integer> categoriesIds, int page);
 
 }

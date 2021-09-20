@@ -12,18 +12,15 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * Created by .
- */
 @WebMvcTest(controllers = CategoryController.class, secure = false)
 @RunWith(SpringRunner.class)
 public class CategoryControllerTest {
@@ -35,9 +32,8 @@ public class CategoryControllerTest {
     private CategoryService categoryService;
 
     @Test
-    public void getCategories() throws Exception {
+    public void testGetCategories() throws Exception {
         //given
-        List<CategoryDtoOut> categoryDtoOuts = new ArrayList<>();
         CategoryDtoOut first = CategoryDtoOut.builder()
                 .id(1)
                 .name("first")
@@ -46,10 +42,8 @@ public class CategoryControllerTest {
                 .id(2)
                 .name("second")
                 .build();
-        categoryDtoOuts.add(first);
-        categoryDtoOuts.add(second);
 
-        when(categoryService.getCategories(1)).thenReturn(categoryDtoOuts);
+        when(categoryService.getCategories(1)).thenReturn(Arrays.asList(first, second));
 
         //when then
         mvc.perform(MockMvcRequestBuilders.get("/api/category")
@@ -57,13 +51,13 @@ public class CategoryControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data[0].id").value(1))
-                .andExpect(jsonPath("$.data[0].name").value("first"));
-
+                .andExpect(jsonPath("$.data[0].name").value("first"))
+                .andExpect(jsonPath("$.data[1].id").value(2))
+                .andExpect(jsonPath("$.data[1].name").value("second"));
     }
 
     @Test
-    public void addCategory() throws Exception {
-
+    public void testAddCategory() throws Exception {
         //given
         CategoryDtoOut category = CategoryDtoOut.builder().name("first").build();
         CategoryDtoIn categoryDtoIn = new CategoryDtoIn();
@@ -80,7 +74,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void getCategory() throws Exception {
+    public void testGetCategory() throws Exception {
         //given
         CategoryDtoOut categoryDtoOut = CategoryDtoOut.builder().id(1).name("first").build();
 
@@ -95,13 +89,9 @@ public class CategoryControllerTest {
 
 
     @Test
-    public void deleteCategory() throws Exception {
-
+    public void testDeleteCategory() throws Exception {
         //given
-        CategoryDtoOut category = CategoryDtoOut.builder().id(1).name("first").build();
-        CategoryDtoIn categoryDtoIn = new CategoryDtoIn();
-        categoryDtoIn.setName("first");
-        when(categoryService.addCategory(categoryDtoIn)).thenReturn(category);
+        doNothing().when(categoryService).deleteCategory(1);
 
         //when then
         mvc.perform(MockMvcRequestBuilders.delete("/api/category/{id}", "1"))

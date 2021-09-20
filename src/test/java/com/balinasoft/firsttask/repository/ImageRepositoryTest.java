@@ -3,23 +3,20 @@ package com.balinasoft.firsttask.repository;
 import com.balinasoft.firsttask.domain.Category;
 import com.balinasoft.firsttask.domain.Image;
 import com.balinasoft.firsttask.domain.User;
-import com.balinasoft.firsttask.dto.ImageDtoOut;
-import org.junit.Assert;
+import com.google.common.collect.Sets;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Created by .
- */
+import static org.junit.Assert.assertEquals;
+
 @RunWith(SpringRunner.class)
 @DataJpaTest
 public class ImageRepositoryTest {
@@ -27,52 +24,49 @@ public class ImageRepositoryTest {
     @Autowired
     private ImageRepository imageRepository;
     @Autowired
-    private CategoryRepository categoryRepository;
+    private UserRepository userRepository;
 
     @Test
-    public void testGetImagesByCategories() throws Exception {
-        Set<Category> categories = new HashSet<>();
+    public void testGetImagesByCategories() {
+        // given
         Category category1 = new Category();
         category1.setName("first");
-
         Category category2 = new Category();
         category2.setName("second");
-
         Category category3 = new Category();
         category3.setName("third");
 
-        List<Image> images = new ArrayList<>();
+        User user1 = new User();
+        User user2 = new User();
 
-        Image image = new Image();
+        userRepository.save(user1);
+        userRepository.save(user2);
+
         Image image1 = new Image();
         Image image2 = new Image();
+        Image image3 = new Image();
 
-        category1.addImage(image);
-        category1.addImage(image1);
-        category3.addImage(image2);
-
-        image.addCategory(category1);
         image1.addCategory(category1);
-        image2.addCategory(category3);
+        image1.addCategory(category2);
+        image2.addCategory(category2);
+        image3.addCategory(category3);
 
-        categoryRepository.save(category1);
-        categoryRepository.save(category3);
-        categoryRepository.save(category2);
+        image1.setUser(user1);
+        image2.setUser(user2);
+        image3.setUser(user1);
 
-        imageRepository.save(image);
+        Set<Image> expectedImages = Sets.newHashSet(image1);
+
+        // when
         imageRepository.save(image1);
         imageRepository.save(image2);
+        imageRepository.save(image3);
 
-        categories.add(category1);
-        categories.add(category2);
+        List<Integer> categoriesIds = Arrays.asList(category1.getId(), category2.getId());
+        Set<Image> imagesByCategories = imageRepository.getImagesByUserAndCategories(user1.getId(), categoriesIds);
 
-        images.add(image);
-        images.add(image1);
-
-//        List<Image> imagesByCategories = imageRepository.getImagesByCategoriesIn(categories,new PageRequest(1,5));
-        List<Image> imagesByCategories = imageRepository.getImagesByCategoriesIn(categories);
-
-        Assert.assertEquals(imagesByCategories,images);
+        // then
+        assertEquals(expectedImages, imagesByCategories);
     }
 
 }

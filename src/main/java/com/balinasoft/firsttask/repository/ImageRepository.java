@@ -1,10 +1,7 @@
 package com.balinasoft.firsttask.repository;
 
 
-import com.balinasoft.firsttask.domain.Category;
 import com.balinasoft.firsttask.domain.Image;
-import com.balinasoft.firsttask.domain.User;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -23,8 +20,8 @@ public interface ImageRepository extends JpaRepository<Image, Integer> {
     @Query("from Image i where i.user.id = :userId order by i.date desc")
     List<Image> findByUser(@Param("userId") int userId, Pageable pageable);
 
-    //    List<Image> getImagesByCategoriesIn( Set<Category> categories, Pageable pageable);
-    List<Image> getImagesByCategoriesIn(Set<Category> categories);
+    @Query(value = "select i from Image i join i.categories c where i.user.id = :userId and c.id in (:categoriesIds) order by i.date desc")
+    Set<Image> getImagesByUserAndCategories(@Param("userId") int userId, @Param("categoriesIds") List<Integer> categoriesIds);
 
 
 }

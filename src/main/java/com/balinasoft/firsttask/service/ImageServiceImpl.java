@@ -108,9 +108,8 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public List<ImageDtoOut> getImagesByCategories(Set<Category> categories, int page) {
-        List<Image> images = imageRepository.getImagesByCategoriesIn(categories);
-//        List<Image> images = imageRepository.getImagesByCategoriesIn(categories,new PageRequest(page,20));
+    public List<ImageDtoOut> getImagesByCategories(List<Integer> categories, int page) {
+        Set<Image> images = imageRepository.getImagesByUserAndCategories(securityContextHolderWrapper.currentUserId(), categories);
         return images.stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
