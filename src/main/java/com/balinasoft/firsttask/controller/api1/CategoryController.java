@@ -4,39 +4,42 @@ import com.balinasoft.firsttask.dto.CategoryDtoIn;
 import com.balinasoft.firsttask.dto.ResponseDto;
 import com.balinasoft.firsttask.service.CategoryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
 import static com.balinasoft.firsttask.system.StaticWrapper.wrap;
 
-/**
- * Created by .
- */
-
+//TODO add swagger annotations everywhere
 @RestController
-@RequestMapping("/api/categories")
+@RequestMapping("/api/category")
 @RequiredArgsConstructor
 public class CategoryController {
 
     private final CategoryService categoryService;
 
-    @RequestMapping(method = RequestMethod.GET)
-    public ResponseDto getCategories() {
-        return wrap(categoryService.getAllCategories());
+    @Secured("ROLE_USER")
+    @GetMapping(value = "{id}")
+    public ResponseDto getCategory(@PathVariable int id) {
+        return wrap(categoryService.getCategory(id));
     }
 
-    @RequestMapping(method = RequestMethod.POST)
-    public ResponseDto addCategory(@RequestParam String name) {
-        return wrap(categoryService.save(name));
+    @Secured("ROLE_USER")
+    @GetMapping
+    public ResponseDto getCategories(@RequestParam int page) {
+        return wrap(categoryService.getCategories(page));
     }
 
-    @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
-    public ResponseDto deleteCategory(@PathVariable Long id) {
+    @Secured("ROLE_USER")
+    @PostMapping
+    public ResponseDto addCategory(@RequestBody @Valid CategoryDtoIn categoryDtoIn) {
+        return wrap(categoryService.addCategory(categoryDtoIn));
+    }
+
+    @Secured("ROLE_USER")
+    @DeleteMapping(value = "{id}")
+    public ResponseDto deleteCategory(@PathVariable int id) {
         categoryService.deleteCategory(id);
         return wrap();
     }

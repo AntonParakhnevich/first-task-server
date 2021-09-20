@@ -13,6 +13,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
@@ -42,4 +43,7 @@ public class ImageDtoIn {
     @DecimalMin("-180.0")
     @DecimalMax("180.0")
     double lng;
+
+    @Min(1)
+    int categoryId;
 }

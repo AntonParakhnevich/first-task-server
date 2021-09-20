@@ -1,38 +1,30 @@
-package com.balinasoft.firsttask.domain.api2;
+package com.balinasoft.firsttask.domain;
 
-import com.balinasoft.firsttask.domain.Image;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Created by .
- */
+@Entity
+@Table(name = "category")
 @Getter
 @Setter
-@Entity
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column
     private String name;
+
+    @ManyToOne
+    private User user;
 
     @ManyToMany(mappedBy = "categories")
     private Set<Image> images = new HashSet<>();

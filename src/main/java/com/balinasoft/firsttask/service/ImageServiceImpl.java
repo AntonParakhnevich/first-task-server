@@ -1,10 +1,11 @@
 package com.balinasoft.firsttask.service;
 
+import com.balinasoft.firsttask.domain.Category;
 import com.balinasoft.firsttask.domain.Image;
 import com.balinasoft.firsttask.domain.User;
-import com.balinasoft.firsttask.domain.api2.Category;
 import com.balinasoft.firsttask.dto.ImageDtoIn;
 import com.balinasoft.firsttask.dto.ImageDtoOut;
+import com.balinasoft.firsttask.repository.CategoryRepository;
 import com.balinasoft.firsttask.repository.ImageRepository;
 import com.balinasoft.firsttask.repository.UserRepository;
 import com.balinasoft.firsttask.system.error.ApiAssert;
@@ -47,15 +48,25 @@ public class ImageServiceImpl implements ImageService {
 
     private final ImageRepository imageRepository;
 
+    private final CategoryRepository categoryRepository;
+
+    private final SecurityContextHolderWrapper securityContextHolderWrapper;
+
     @Autowired
     public ImageServiceImpl(UserRepository userRepository,
-                            ImageRepository imageRepository) {
+                            ImageRepository imageRepository,
+                            CategoryRepository categoryRepository,
+                            SecurityContextHolderWrapper securityContextHolderWrapper) {
         this.userRepository = userRepository;
         this.imageRepository = imageRepository;
+        this.categoryRepository = categoryRepository;
+        this.securityContextHolderWrapper = securityContextHolderWrapper;
     }
 
     @Override
     public ImageDtoOut uploadImage(ImageDtoIn imageDtoIn) {
+        Category category = categoryRepository.findOne(imageDtoIn.getCategoryId());
+        ApiAssert.notFound(category == null); //todo check what exception is thrown?
         String fileName;
         try {
             fileName = saveImage(imageDtoIn.getBase64Image());
